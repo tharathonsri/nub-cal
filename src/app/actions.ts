@@ -51,6 +51,9 @@ export async function addEntry(input: {
   carbs: number;
   fat: number;
 }) {
+  const user = await getUserById(input.userId);
+  if (!user) throw new Error("SESSION_INVALID");
+
   const entry = {
     id: randomUUID(),
     userId: input.userId,

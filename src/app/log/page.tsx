@@ -86,14 +86,33 @@ export default function LogPage() {
       });
       setForm(emptyForm);
       await loadEntries();
+    } catch (err) {
+      if (err instanceof Error && err.message === "SESSION_INVALID") {
+        clearSession();
+        router.replace("/");
+        return;
+      }
+      setError("Failed to add entry. Please try again.");
     } finally {
       setAdding(false);
     }
   }
 
   async function handleDelete(id: string) {
+    const removed = entries.find((e) => e.id === id);
     setEntries((prev) => prev.filter((e) => e.id !== id));
-    await deleteEntry(id);
+    try {
+      await deleteEntry(id);
+    } catch {
+      if (removed) {
+        setEntries((prev) =>
+          [...prev, removed].sort((a, b) =>
+            a.createdAt.localeCompare(b.createdAt),
+          ),
+        );
+      }
+      setError("Failed to delete entry. Please try again.");
+    }
   }
 
   function handleSwitchUser() {
