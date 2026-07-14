@@ -32,6 +32,7 @@ export default function LogPage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     const s = getSession();
@@ -57,7 +58,7 @@ export default function LogPage() {
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!session || !date) return;
+    if (!session || !date || adding) return;
     const kcal = Number(form.kcal);
     const protein = Number(form.protein);
     const carbs = Number(form.carbs);
@@ -71,18 +72,23 @@ export default function LogPage() {
       return;
     }
     setError(null);
-    await addEntry({
-      userId: session.id,
-      loggedDate: date,
-      foodName: form.foodName.trim(),
-      quantity: form.quantity.trim() || undefined,
-      kcal,
-      protein,
-      carbs,
-      fat,
-    });
-    setForm(emptyForm);
-    loadEntries();
+    setAdding(true);
+    try {
+      await addEntry({
+        userId: session.id,
+        loggedDate: date,
+        foodName: form.foodName.trim(),
+        quantity: form.quantity.trim() || undefined,
+        kcal,
+        protein,
+        carbs,
+        fat,
+      });
+      setForm(emptyForm);
+      await loadEntries();
+    } finally {
+      setAdding(false);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -207,9 +213,10 @@ export default function LogPage() {
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
           type="submit"
-          className="mt-1 rounded-md bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
+          disabled={adding}
+          className="mt-1 rounded-md bg-black px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-white dark:text-black"
         >
-          Add entry
+          {adding ? "Adding..." : "Add entry"}
         </button>
       </form>
 
