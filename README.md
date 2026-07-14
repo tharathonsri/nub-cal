@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nub Cal
 
-## Getting Started
+A daily nutrition tracker (kcal, protein, carbs, fat) supporting multiple users with no login — just type a name to create or resume a session.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router), TypeScript, Tailwind
+- Drizzle ORM + `@libsql/client`, backed by a local SQLite file in dev and [Turso](https://turso.tech) in production
+- Deployed on [Vercel](https://vercel.com)
+
+## Local development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no env vars set, the app uses a local SQLite file (`./local.db`). Push the schema to it with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run db:push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Using a real Turso database locally
 
-## Learn More
+Copy `.env.example` to `.env.local` and set `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` from a database created with the [Turso CLI](https://docs.turso.tech/cli/installation), then run `npm run db:push`.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Production is deployed on Vercel with `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` set as project env vars (Production + Preview). The GitHub repo is connected to the Vercel project, so pushes to `main` deploy automatically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Live: https://nub-cal-seven.vercel.app
