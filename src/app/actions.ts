@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "crypto";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import { entries, users } from "@/db/schema";
 
@@ -72,4 +72,45 @@ export async function addEntry(input: {
 
 export async function deleteEntry(entryId: string) {
   await db.delete(entries).where(eq(entries.id, entryId));
+}
+
+export type FoodHistorySuggestion = {
+  foodName: string;
+  quantity: string | null;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+export async function searchLoggedFoods(
+  query: string,
+): Promise<FoodHistorySuggestion[]> {
+  const trimmed = query.trim();
+  if (trimmed.length < 2) return [];
+
+  const rows = await db
+    .select()
+    .from(entries)
+    .where(sql`lower(${entries.foodName}) like ${"%" + trimmed.toLowerCase() + "%"}`)
+    .orderBy(desc(entries.createdAt))
+    .limit(50);
+
+  const seen = new Set<string>();
+  const suggestions: FoodHistorySuggestion[] = [];
+  for (const row of rows) {
+    const key = row.foodName.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    suggestions.push({
+      foodName: row.foodName,
+      quantity: row.quantity,
+      kcal: row.kcal,
+      protein: row.protein,
+      carbs: row.carbs,
+      fat: row.fat,
+    });
+    if (suggestions.length >= 8) break;
+  }
+  return suggestions;
 }
