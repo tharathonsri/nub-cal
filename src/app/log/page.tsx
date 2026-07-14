@@ -1,15 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  addEntry,
-  deleteEntry,
-  getEntries,
-  searchFood,
-  type Entry,
-  type FoodSuggestion,
-} from "../actions";
+import { addEntry, deleteEntry, getEntries, type Entry } from "../actions";
 import { clearSession, getSession, todayLocalDate, type Session } from "@/lib/session";
 
 const emptyForm = {
@@ -40,9 +33,6 @@ export default function LogPage() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const [suggestions, setSuggestions] = useState<FoodSuggestion[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const s = getSession();
@@ -106,32 +96,6 @@ export default function LogPage() {
     } finally {
       setAdding(false);
     }
-  }
-
-  function handleFoodNameChange(value: string) {
-    setForm({ ...form, foodName: value });
-    if (searchTimer.current) clearTimeout(searchTimer.current);
-    if (value.trim().length < 2) {
-      setSuggestions([]);
-      return;
-    }
-    searchTimer.current = setTimeout(async () => {
-      const results = await searchFood(value);
-      setSuggestions(results);
-      setShowSuggestions(true);
-    }, 300);
-  }
-
-  function handleSelectSuggestion(s: FoodSuggestion) {
-    setForm({
-      ...form,
-      foodName: s.description,
-      kcal: String(s.kcal),
-      protein: String(s.protein),
-      carbs: String(s.carbs),
-      fat: String(s.fat),
-    });
-    setShowSuggestions(false);
   }
 
   async function handleDelete(id: string) {
@@ -224,39 +188,12 @@ export default function LogPage() {
       >
         <h2 className="text-sm font-medium">Add entry</h2>
         <div className="grid grid-cols-2 gap-2">
-          <div className="relative col-span-2">
-            <input
-              placeholder="Food name"
-              value={form.foodName}
-              onChange={(e) => handleFoodNameChange(e.target.value)}
-              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-              onBlur={() =>
-                setTimeout(() => setShowSuggestions(false), 150)
-              }
-              autoComplete="off"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-            />
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-gray-200 bg-white text-sm shadow-lg dark:border-gray-700 dark:bg-black">
-                {suggestions.map((s) => (
-                  <li key={s.fdcId}>
-                    <button
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelectSuggestion(s)}
-                      className="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-900"
-                    >
-                      <span>{s.description}</span>
-                      <span className="text-xs text-gray-500">
-                        {s.kcal} kcal · {s.protein}g P · {s.carbs}g C ·{" "}
-                        {s.fat}g F ({s.servingLabel})
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <input
+            placeholder="Food name"
+            value={form.foodName}
+            onChange={(e) => setForm({ ...form, foodName: e.target.value })}
+            className="col-span-2 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
+          />
           <input
             placeholder="Quantity (e.g. 1 cup)"
             value={form.quantity}
