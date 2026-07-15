@@ -224,9 +224,10 @@ export default function LogPage() {
       >
         <h2 className="text-sm font-medium">Add entry</h2>
         <div className="grid grid-cols-2 gap-2">
-          <div className="relative col-span-2">
+          <div className="col-span-2 flex flex-col gap-1">
+            <label className="text-xs text-gray-500">Food name</label>
+            <div className="relative">
             <input
-              placeholder="Food name"
               value={form.foodName}
               onChange={(e) => handleFoodNameChange(e.target.value)}
               onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
@@ -234,7 +235,7 @@ export default function LogPage() {
                 setTimeout(() => setShowSuggestions(false), 150)
               }
               autoComplete="off"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
             />
             {showSuggestions && suggestions.length > 0 && (
               <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-md border border-gray-200 bg-white text-sm shadow-lg dark:border-gray-700 dark:bg-black">
@@ -261,41 +262,53 @@ export default function LogPage() {
                 ))}
               </ul>
             )}
+            </div>
           </div>
-          <input
-            placeholder="Quantity (e.g. 1 cup)"
-            value={form.quantity}
-            onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-            className="col-span-2 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-          />
-          <input
-            placeholder="kcal"
-            inputMode="decimal"
-            value={form.kcal}
-            onChange={(e) => setForm({ ...form, kcal: e.target.value })}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-          />
-          <input
-            placeholder="protein (g)"
-            inputMode="decimal"
-            value={form.protein}
-            onChange={(e) => setForm({ ...form, protein: e.target.value })}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-          />
-          <input
-            placeholder="carbs (g)"
-            inputMode="decimal"
-            value={form.carbs}
-            onChange={(e) => setForm({ ...form, carbs: e.target.value })}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-          />
-          <input
-            placeholder="fat (g)"
-            inputMode="decimal"
-            value={form.fat}
-            onChange={(e) => setForm({ ...form, fat: e.target.value })}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-transparent"
-          />
+          <label className="col-span-2 flex flex-col gap-1 text-xs text-gray-500">
+            Quantity
+            <input
+              placeholder="e.g. 1 cup"
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            kcal
+            <input
+              inputMode="decimal"
+              value={form.kcal}
+              onChange={(e) => setForm({ ...form, kcal: e.target.value })}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            Protein (g)
+            <input
+              inputMode="decimal"
+              value={form.protein}
+              onChange={(e) => setForm({ ...form, protein: e.target.value })}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            Carbs (g)
+            <input
+              inputMode="decimal"
+              value={form.carbs}
+              onChange={(e) => setForm({ ...form, carbs: e.target.value })}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-gray-500">
+            Fat (g)
+            <input
+              inputMode="decimal"
+              value={form.fat}
+              onChange={(e) => setForm({ ...form, fat: e.target.value })}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-black dark:border-gray-700 dark:bg-transparent dark:text-white"
+            />
+          </label>
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <button
